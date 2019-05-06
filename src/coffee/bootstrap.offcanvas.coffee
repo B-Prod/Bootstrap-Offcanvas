@@ -1,3 +1,27 @@
+# IMPORTANT:
+# Following a Chrome/Firefox update, passive event listeners were added to addEventListener
+# provoking many issues on event handling (i.e., e.preventDefalt() stopped to work).
+#
+# See this comment for a good overview: https://stackoverflow.com/a/39187679
+# 
+# For the time being, jQuery hasn't shipped a solution, so .on() is still unable
+# to pass the parameters to the native addEventListener.
+# See this issue for more info: https://github.com/jquery/jquery/issues/2871
+#
+# The only solution is to override touchmove event before loading jquery:
+# See https://stackoverflow.com/questions/39152877/consider-marking-event-handler-as-passive-to-make-the-page-more-responsive
+# and https://stackoverflow.com/questions/46094912/added-non-passive-event-listener-to-a-scroll-blocking-touchstart-event
+
+
+jQuery.event.special.touchmove = {
+  setup: ( _, ns, handle ) ->
+    if ns.includes("noPreventDefault")
+      this.addEventListener("touchstart", handle, { passive: false });
+    else
+      this.addEventListener("touchstart", handle, { passive: true });
+};
+
+
 (($, window) ->
     class OffcanvasDropdown
         #   Public: Constructor for offcanvas
@@ -51,8 +75,11 @@
 
             # Add touch start event
             $(document).on "touchstart", @_touchStart
-
+            
             # Add touch move event
+            # Feature detection needs to be added for passive events on AddEventListener
+            # More info: https://www.chromestatus.com/feature/5093566007214080
+            # See also the comment on top of this file
             $(document).on "touchmove", @_touchMove
 
             # Add touch end event
@@ -126,8 +153,6 @@
             else
                 @element.css @_clearCss()
 
-            # Overflow on body element
-            @offcanvas.bodyOverflow(sendEvents)
 
         #   Private: Get CSS
         #
@@ -262,7 +287,6 @@
 
             @_navbarHeight()
 
-            @bodyOverflow()
 
         _open: (e) =>
             e.preventDefault()
@@ -276,8 +300,6 @@
 
             @_navbarHeight()
 
-            @bodyOverflow()
-
         _close: (e) =>
             e.preventDefault()
             return if @target.is ':not(.in)'
@@ -289,8 +311,6 @@
             @element.removeClass 'is-open'
 
             @_navbarHeight()
-
-            @bodyOverflow()
 
         #   Private: Document click event to hide offcanvas
         #
@@ -308,7 +328,6 @@
                     @target.removeClass 'in'
                     @element.removeClass 'is-open'
                     @_navbarHeight()
-                    @bodyOverflow()
 
         #   Private: Send before events
         _sendEventsBefore: =>
@@ -325,16 +344,6 @@
                 @target.trigger 'shown.bs.offcanvas'
             else
                 @target.trigger 'hidden.bs.offcanvas'
-
-        #   Public: Overflow on body
-        bodyOverflow: (events = true) =>
-            if @target.is '.in'
-                $('body').addClass 'offcanvas-stop-scrolling'
-            else
-                $('body').removeClass 'offcanvas-stop-scrolling'
-
-            if events
-                @_sendEventsAfter()
 
         #   Transform checker
         #

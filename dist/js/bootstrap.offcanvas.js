@@ -1,6 +1,20 @@
 (function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
+  jQuery.event.special.touchmove = {
+    setup: function(_, ns, handle) {
+      if (ns.includes("noPreventDefault")) {
+        return this.addEventListener("touchstart", handle, {
+          passive: false
+        });
+      } else {
+        return this.addEventListener("touchstart", handle, {
+          passive: true
+        });
+      }
+    }
+  };
+
   (function($, window) {
     var Offcanvas, OffcanvasDropdown, OffcanvasTouch;
     OffcanvasDropdown = (function() {
@@ -100,16 +114,15 @@
           this.currentX = 0;
           this.element.removeClass('in').css(this._clearCss());
           this.button.removeClass('is-open');
-          sendEvents = true;
+          return sendEvents = true;
         } else if (Math.abs(x - this.startX) > this.endThreshold && this.startX > this.startThreshold && this.startX < this.maxStartThreshold) {
           this.currentX = this.element.hasClass('navbar-offcanvas-right') ? -this.element.outerWidth() : this.element.outerWidth();
           this.element.toggleClass('in').css(this._clearCss());
           this.button.toggleClass('is-open');
-          sendEvents = true;
+          return sendEvents = true;
         } else {
-          this.element.css(this._clearCss());
+          return this.element.css(this._clearCss());
         }
-        return this.offcanvas.bodyOverflow(sendEvents);
       };
 
       OffcanvasTouch.prototype._getCss = function(x) {
@@ -157,7 +170,6 @@
       function Offcanvas(element) {
         var t, target;
         this.element = element;
-        this.bodyOverflow = __bind(this.bodyOverflow, this);
         this._sendEventsAfter = __bind(this._sendEventsAfter, this);
         this._sendEventsBefore = __bind(this._sendEventsBefore, this);
         this._documentClicked = __bind(this._documentClicked, this);
@@ -224,8 +236,7 @@
         $(".navbar-offcanvas").not(this.target).trigger('offcanvas.close');
         this.target.toggleClass('in');
         this.element.toggleClass('is-open');
-        this._navbarHeight();
-        return this.bodyOverflow();
+        return this._navbarHeight();
       };
 
       Offcanvas.prototype._open = function(e) {
@@ -236,8 +247,7 @@
         this._sendEventsBefore();
         this.target.addClass('in');
         this.element.addClass('is-open');
-        this._navbarHeight();
-        return this.bodyOverflow();
+        return this._navbarHeight();
       };
 
       Offcanvas.prototype._close = function(e) {
@@ -248,8 +258,7 @@
         this._sendEventsBefore();
         this.target.removeClass('in');
         this.element.removeClass('is-open');
-        this._navbarHeight();
-        return this.bodyOverflow();
+        return this._navbarHeight();
       };
 
       Offcanvas.prototype._documentClicked = function(e) {
@@ -261,8 +270,7 @@
             this._sendEventsBefore();
             this.target.removeClass('in');
             this.element.removeClass('is-open');
-            this._navbarHeight();
-            return this.bodyOverflow();
+            return this._navbarHeight();
           }
         }
       };
@@ -280,20 +288,6 @@
           return this.target.trigger('shown.bs.offcanvas');
         } else {
           return this.target.trigger('hidden.bs.offcanvas');
-        }
-      };
-
-      Offcanvas.prototype.bodyOverflow = function(events) {
-        if (events == null) {
-          events = true;
-        }
-        if (this.target.is('.in')) {
-          $('body').addClass('offcanvas-stop-scrolling');
-        } else {
-          $('body').removeClass('offcanvas-stop-scrolling');
-        }
-        if (events) {
-          return this._sendEventsAfter();
         }
       };
 
