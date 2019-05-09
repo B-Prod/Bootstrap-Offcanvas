@@ -93,7 +93,7 @@ jQuery.event.special.touchmove = {
 
             if @element.is '.in'
                 # Change the height of the offcanvas on touch start
-                @element.height $(window).outerHeight()
+                @element.outerHeight $(window).outerHeight()
 
         #   Private: Touch move
         #
@@ -268,7 +268,7 @@ jQuery.event.special.touchmove = {
           if @target.is '.in'
             # For Android (And probably some other browsers)
             # The height of the element needs to be set to the window height
-            @target.height $(window).outerHeight()
+            @target.outerHeight $(window).outerHeight()
 
         #   Private: Clicked element
         #

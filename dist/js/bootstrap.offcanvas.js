@@ -71,7 +71,7 @@
       OffcanvasTouch.prototype._touchStart = function(e) {
         this.startX = e.originalEvent.touches[0].pageX;
         if (this.element.is('.in')) {
-          return this.element.height($(window).outerHeight());
+          return this.element.outerHeight($(window).outerHeight());
         }
       };
 
@@ -226,7 +226,7 @@
 
       Offcanvas.prototype._navbarHeight = function() {
         if (this.target.is('.in')) {
-          return this.target.height($(window).outerHeight());
+          return this.target.outerHeight($(window).outerHeight());
         }
       };
 
