@@ -233,7 +233,7 @@ jQuery.event.special.touchmove = {
                                 @target.height ''
 
                         # Click event on document
-                        $(document).on "click", @_documentClicked
+                        $(document).on "click touchstart", @_documentClicked
 
                         # Should touch be added to this target
                         if @target.hasClass 'navbar-offcanvas-touch'

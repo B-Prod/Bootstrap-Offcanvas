@@ -192,7 +192,7 @@
                   }
                 };
               })(this));
-              $(document).on("click", this._documentClicked);
+              $(document).on("click touchstart", this._documentClicked);
               if (this.target.hasClass('navbar-offcanvas-touch')) {
                 t = new OffcanvasTouch(this.element, this.target, this.location, this);
               }
